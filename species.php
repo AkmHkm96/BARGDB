@@ -1,3 +1,21 @@
+<?php  
+ include "connect.php";
+ $conn = OpenCon();
+  
+ $char = '';  
+ if(isset($_GET["char"]))  
+ {  
+      $char = $_GET["char"];  
+      $char = preg_replace('#[^a-z]#i', '', $char);  
+      $query = "SELECT * FROM species WHERE species_name LIKE '$char%'";  
+ }  
+ else  
+ {  
+      $query = "SELECT * FROM species ORDER BY species_id";  
+ }  
+ $result = mysqli_query($conn, $query);  
+ ?>  
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,6 +40,9 @@
 
   <!-- Theme CSS - Includes Bootstrap -->
   <link href="css/creative.min.css" rel="stylesheet">
+
+  <!-- Paganation Menu -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 
 </head>
 
@@ -90,35 +111,67 @@
     }
     </script>
 
-<!-- Download Section -->
-<section class="page-section bg-dark" id="download">
+<!-- Browse Section -->
+<section class="page-section bg-success" id="species">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8 text-center">
-        <h2 class="text-white mt-0">Downloads</h2>
+        <h2 class="text-white mt-0">Species</h2>
         <hr class="divider light my-4">
-        <p class="text-white-50 mb-4">All files displyaed are available to download.</p>
+        <p class="text-white-50 mb-4">Our curated library of samples collected from researchers.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="page-section bg-gray" id="menu">
-  <div class="container">
-    <div class="row justify-content-center">
-      <table id="dwnld">
-        <tr>
-          <td width="85%">File 1</td>
-          <td width="15%"><button class="btn btn2" onclick="">Download</button></td>
-        </tr>
-        <tr>
-          <td>File 2</td>
-          <td><button class="btn btn2" onclick="">Download</button></td>
-        </tr>
-      </table>
+  <!-- Menu Section -->
+  <section class="page-section bg-gray" id="menu">
+    <div class="container">
+      <div class="row justify-content-center">
+      <div>  
+                     <?php  
+                          $character = range('A', 'Z');  
+                          echo '<ul class="pagination">';  
+                          foreach($character as $alphabet)  
+                          {  
+                               echo '<li><a href="index.php?character='.$alphabet.'">'.$alphabet.'</a></li>';  
+                          }  
+                          echo '</ul>';  
+                     ?>  
+                     </div>  
+                     <table class="table table-bordered">  
+                          <tr>  
+                               <th width="20%">ID</th>  
+                               <th width="40%">Species Name</th>  
+                               <th width="40%">Species Family</th>  
+                          </tr>  
+                          <?php  
+                          if(mysqli_num_rows($result) > 0)  
+                          {  
+                               while($row = mysqli_fetch_array($result))  
+                               {  
+                          ?>  
+                          <tr>  
+                               <td><?php echo $row["species_id"]; ?></td>  
+                               <td><?php echo $row["species_name"]; ?></td>  
+                               <td><?php echo $row["species_family"]; ?></td>  
+                          </tr>  
+                          <?php  
+                               }  
+                          }  
+                          else  
+                          {  
+                          ?>  
+                          <tr>  
+                               <td colspan="3">Data not Found</td>  
+                          </tr>  
+                          <?php  
+                          }  
+                          ?>  
+                     </table>  
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
   <!-- Footer -->
   <footer class="bg-light py-5">
@@ -137,6 +190,10 @@
 
   <!-- Custom scripts for this template -->
   <script src="js/creative.min.js"></script>
+
+  <!-- Paganation Menu -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </body>
 
